@@ -15,8 +15,15 @@ dependencies = []   # filled incrementally
 pythonpath = ["src"]
 testpaths = ["tests"]
 addopts = ["--import-mode=importlib"]
-
 markers = [
     "expect_fail: pre-code mold — expected to fail until task implementation completes",
     "cfg_tc: config contract test case ID",
+    "ct_obs: observability contract test case ID",
 ]
+
+[project.optional-dependencies]
+dev = [
+    "opentelemetry-api>=1.20",
+    "opentelemetry-sdk>=1.20",
+]
+
