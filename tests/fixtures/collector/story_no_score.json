@@ -1,0 +1,9 @@
+{
+  "id": 4001,
+  "type": "story",
+  "title": "Story Without Score",
+  "url": "https://example.com/noscore",
+  "by": "author",
+  "descendants": 3,
+  "time": 1704067200
+}

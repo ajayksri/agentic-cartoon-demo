@@ -1,0 +1,44 @@
+{
+  "pairs": [
+    {
+      "id": 1,
+      "input": "HTTP://Example.COM/Path/",
+      "expected": "https://example.com/Path"
+    },
+    {
+      "id": 2,
+      "input": "example.com/page",
+      "expected": "https://example.com/page"
+    },
+    {
+      "id": 3,
+      "input": "https://ex.com:443/foo/",
+      "expected": "https://ex.com/foo"
+    },
+    {
+      "id": 4,
+      "input": "http://ex.com:80/bar/",
+      "expected": "http://ex.com/bar"
+    },
+    {
+      "id": 5,
+      "input": "https://ex.com/a//b//",
+      "expected": "https://ex.com/a/b"
+    },
+    {
+      "id": 6,
+      "input": "https://ex.com/?b=2&a=1&utm_source=x&fbclid=y",
+      "expected": "https://ex.com/?a=1&b=2"
+    },
+    {
+      "id": 7,
+      "input": "https://ex.com/x#fragment",
+      "expected": "https://ex.com/x"
+    },
+    {
+      "id": 8,
+      "input": "not-a-url",
+      "reject": true
+    }
+  ]
+}

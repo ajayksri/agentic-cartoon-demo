@@ -1,0 +1,10 @@
+{
+  "id": 7001,
+  "type": "story",
+  "title": "URL Variant A",
+  "url": "HTTP://Example.COM/Path/",
+  "by": "author",
+  "score": 50,
+  "descendants": 4,
+  "time": 1704067200
+}

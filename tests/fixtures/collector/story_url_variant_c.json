@@ -1,0 +1,10 @@
+{
+  "id": 7003,
+  "type": "story",
+  "title": "URL Variant C",
+  "url": "https://ex.com/?b=2&a=1&utm_source=x&fbclid=y",
+  "by": "author",
+  "score": 30,
+  "descendants": 2,
+  "time": 1704067000
+}
