@@ -12,6 +12,7 @@ requires-python = ">=3.11"
 dependencies = [
     "psycopg[binary]>=3.1,<4",
     "psycopg_pool>=3.1,<4",
+    "redis>=5.0",
 ]
 
 [tool.pytest.ini_options]
@@ -23,6 +24,7 @@ markers = [
     "cfg_tc: config contract test case ID",
     "ct_obs: observability contract test case ID",
     "pers_tc: persistence contract test case ID",
+    "tq_tc: task_queue contract test case ID",
 ]
 
 [project.optional-dependencies]
