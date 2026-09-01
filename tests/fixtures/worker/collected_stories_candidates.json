@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "collected_at": "2026-08-31T12:00:00Z",
+  "stats": {
+    "fetched_count": 10,
+    "accepted_count": 5,
+    "rejected_count": 5,
+    "candidate_count": 3
+  },
+  "candidates": [
+    {
+      "source_id": "hn-100",
+      "title": "Rust async patterns",
+      "url": "https://news.ycombinator.com/item?id=100",
+      "score": 150,
+      "comment_count": 42
+    },
+    {
+      "source_id": "hn-101",
+      "title": "AI regulation debate",
+      "url": "https://news.ycombinator.com/item?id=101",
+      "score": 120,
+      "comment_count": 35
+    }
+  ],
+  "stories": [],
+  "rejected": []
+}

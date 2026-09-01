@@ -27,6 +27,12 @@ dependencies = [
     "httpx2>=2.0.0",
 ]
 
+[project.scripts]
+cartoon-demo-api = "runtime.runners:_entry_api"
+cartoon-demo-coordinator = "runtime.runners:_entry_coordinator"
+cartoon-demo-worker = "runtime.runners:_entry_worker"
+cartoon-demo-cli = "cli.runner:_entry_cli"
+
 [tool.pytest.ini_options]
 pythonpath = ["src"]
 testpaths = ["tests"]
@@ -43,6 +49,9 @@ markers = [
     "wf_tc: workflow contract test case ID",
     "agt_tc: agents contract test case ID",
     "api_tc: api contract test case ID",
+    "wkr_tc: worker contract test case ID",
+    "cli_tc: cli contract test case ID",
+    "runtime_tc: runtime contract test case ID",
 ]
 
 [project.optional-dependencies]
