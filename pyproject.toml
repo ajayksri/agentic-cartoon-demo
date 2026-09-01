@@ -25,6 +25,7 @@ markers = [
     "ct_obs: observability contract test case ID",
     "pers_tc: persistence contract test case ID",
     "tq_tc: task_queue contract test case ID",
+    "ct_finj: failure_injection contract test case ID",
 ]
 
 [project.optional-dependencies]
