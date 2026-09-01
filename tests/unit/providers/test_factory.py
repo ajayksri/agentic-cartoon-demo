@@ -209,6 +209,9 @@ def test_create_provider_for_tests_accepts_stub_transport(
     request = GenerateRequest(
         model="gpt-4",
         messages=(ProviderMessage(role=ProviderMessageRole.USER, content="hi"),),
+        workflow_id="wf-test-1",
+        task_id="task-test-1",
+        task_attempt=1,
     )
 
     response = provider.generate(request)

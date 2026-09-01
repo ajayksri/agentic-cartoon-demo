@@ -22,6 +22,9 @@ def _valid_request(*, model: str = "fake-model") -> GenerateRequest:
     return GenerateRequest(
         model=model,
         messages=(ProviderMessage(role=ProviderMessageRole.USER, content="hello"),),
+        workflow_id="wf-test-1",
+        task_id="task-test-1",
+        task_attempt=1,
     )
 def _programmed_response(*, content: str = "programmed") -> GenerateResponse:
     return GenerateResponse(
@@ -182,6 +185,9 @@ def test_default_mode_returns_schema_valid_topic_stub() -> None:
                 content='[{"source_id":"hn-1","title":"Rust async"}]',
             ),
         ),
+        workflow_id="wf-test-1",
+        task_id="task-test-1",
+        task_attempt=1,
     )
 
     response = fake.generate(request)

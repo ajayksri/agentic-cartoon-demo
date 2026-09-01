@@ -50,9 +50,19 @@ class _SpyTelemetry:
         latency_ms: float,
         token_usage: TokenUsage | None,
         span: object,
+        workflow_id: str | None = None,
+        task_id: str | None = None,
+        task_attempt: int | None = None,
     ) -> None:
         self.completed.append(
-            {"model": model, "latency_ms": latency_ms, "token_usage": token_usage}
+            {
+                "model": model,
+                "latency_ms": latency_ms,
+                "token_usage": token_usage,
+                "workflow_id": workflow_id,
+                "task_id": task_id,
+                "task_attempt": task_attempt,
+            }
         )
 
     def emit_call_failed(
@@ -62,9 +72,20 @@ class _SpyTelemetry:
         error: BaseException,
         latency_ms: float,
         span: object | None,
+        workflow_id: str | None = None,
+        task_id: str | None = None,
+        task_attempt: int | None = None,
     ) -> None:
         self.failed.append(
-            {"model": model, "error": error, "latency_ms": latency_ms, "span": span}
+            {
+                "model": model,
+                "error": error,
+                "latency_ms": latency_ms,
+                "span": span,
+                "workflow_id": workflow_id,
+                "task_id": task_id,
+                "task_attempt": task_attempt,
+            }
         )
 def test_success_path_returns_generate_response() -> None:
     from providers.base import BaseRemoteProvider

@@ -60,6 +60,9 @@ class ProviderTelemetry:
         latency_ms: float,
         token_usage: TokenUsage | None,
         span: Span,
+        workflow_id: str | None = None,
+        task_id: str | None = None,
+        task_attempt: int | None = None,
     ) -> None:
         self._finalize_span(span, latency_ms=latency_ms, status="ok")
         logger = self._logger or get_logger()
@@ -68,6 +71,13 @@ class ProviderTelemetry:
             "model": model,
             "latency_ms": latency_ms,
         }
+        fields.update(
+            _correlation_log_fields(
+                workflow_id=workflow_id,
+                task_id=task_id,
+                task_attempt=task_attempt,
+            )
+        )
         if token_usage is not None:
             if token_usage.input_tokens is not None:
                 fields["input_tokens"] = token_usage.input_tokens
@@ -99,6 +109,9 @@ class ProviderTelemetry:
         error: ProviderError,
         latency_ms: float,
         span: Span | None,
+        workflow_id: str | None = None,
+        task_id: str | None = None,
+        task_attempt: int | None = None,
     ) -> None:
         logger = self._logger or get_logger()
         self._ensure_instruments()
@@ -115,6 +128,11 @@ class ProviderTelemetry:
             provider=self._provider_id.value,
             model=model,
             latency_ms=latency_ms,
+            **_correlation_log_fields(
+                workflow_id=workflow_id,
+                task_id=task_id,
+                task_attempt=task_attempt,
+            ),
         )
 
         if self._errors_counter is not None:
@@ -186,6 +204,22 @@ class ProviderTelemetry:
         )
 
 
+def _correlation_log_fields(
+    *,
+    workflow_id: str | None,
+    task_id: str | None,
+    task_attempt: int | None,
+) -> dict[str, str | int]:
+    fields: dict[str, str | int] = {}
+    if workflow_id is not None:
+        fields["workflow_id"] = workflow_id
+    if task_id is not None:
+        fields["task_id"] = task_id
+    if task_attempt is not None:
+        fields["task_attempt"] = task_attempt
+    return fields
+
+
 class RecordingTelemetry(ProviderTelemetry):
     def __init__(self, **kwargs: object) -> None:
         super().__init__(**kwargs)  # type: ignore[arg-type]
@@ -207,6 +241,9 @@ class RecordingTelemetry(ProviderTelemetry):
         latency_ms: float,
         token_usage: TokenUsage | None,
         span: Span,
+        workflow_id: str | None = None,
+        task_id: str | None = None,
+        task_attempt: int | None = None,
     ) -> None:
         self.call_completed.append(
             {
@@ -214,6 +251,9 @@ class RecordingTelemetry(ProviderTelemetry):
                 "latency_ms": latency_ms,
                 "token_usage": token_usage,
                 "span": span,
+                "workflow_id": workflow_id,
+                "task_id": task_id,
+                "task_attempt": task_attempt,
             }
         )
         self.delegated_calls.append("log.info")
@@ -222,6 +262,9 @@ class RecordingTelemetry(ProviderTelemetry):
             latency_ms=latency_ms,
             token_usage=token_usage,
             span=span,
+            workflow_id=workflow_id,
+            task_id=task_id,
+            task_attempt=task_attempt,
         )
 
     def emit_call_failed(
@@ -231,6 +274,9 @@ class RecordingTelemetry(ProviderTelemetry):
         error: ProviderError,
         latency_ms: float,
         span: Span | None,
+        workflow_id: str | None = None,
+        task_id: str | None = None,
+        task_attempt: int | None = None,
     ) -> None:
         self.call_failed.append(
             {
@@ -238,6 +284,9 @@ class RecordingTelemetry(ProviderTelemetry):
                 "error": error,
                 "latency_ms": latency_ms,
                 "span": span,
+                "workflow_id": workflow_id,
+                "task_id": task_id,
+                "task_attempt": task_attempt,
             }
         )
         self.delegated_calls.append("log.error")
@@ -246,4 +295,7 @@ class RecordingTelemetry(ProviderTelemetry):
             error=error,
             latency_ms=latency_ms,
             span=span,
+            workflow_id=workflow_id,
+            task_id=task_id,
+            task_attempt=task_attempt,
         )

@@ -676,6 +676,8 @@ class DefaultWorkerLoop:
             task_type=task_type,
             error_class=error_class,
             retryable=True,
+            workflow_id=task_record.workflow_id,
+            task_id=task_record.task_id,
         )
 
     def _handle_permanent_failure(
@@ -732,6 +734,8 @@ class DefaultWorkerLoop:
             task_type=task_type,
             error_class=error_class,
             retryable=False,
+            workflow_id=delivery.message.workflow_id,
+            task_id=delivery.message.task_id,
         )
 
     # --- Contract / unit test seams (LLD §12) ---

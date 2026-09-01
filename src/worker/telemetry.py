@@ -191,18 +191,27 @@ class WorkerTelemetry:
         task_type: TaskType,
         error_class: str,
         retryable: bool,
+        workflow_id: str | None = None,
+        task_id: str | None = None,
     ) -> None:
         self._ensure_instruments()
         self._failure_counter.add(  # type: ignore[union-attr]
             1.0,
             labels={"task_type": task_type.value, "error_class": error_class},
         )
+        fields: dict[str, str | int | float | bool] = {
+            "task_type": task_type.value,
+            "error_class": error_class,
+            "retryable": retryable,
+        }
+        if workflow_id is not None:
+            fields["workflow_id"] = workflow_id
+        if task_id is not None:
+            fields["task_id"] = task_id
         self._safe_log(
             LOG_TASK_FAILED,
             "Task failed",
-            task_type=task_type.value,
-            error_class=error_class,
-            retryable=retryable,
+            **fields,
         )
 
     def record_stale_ignored(

@@ -82,6 +82,17 @@ class BaseRemoteProvider:
         self._response_assembler = response_assembler or ResponseAssembler()
         self._telemetry = telemetry or ProviderTelemetry(provider_id=provider_id)
 
+    @staticmethod
+    def _telemetry_correlation(request: GenerateRequest) -> dict[str, str | int]:
+        fields: dict[str, str | int] = {}
+        if request.workflow_id is not None:
+            fields["workflow_id"] = request.workflow_id
+        if request.task_id is not None:
+            fields["task_id"] = request.task_id
+        if request.task_attempt is not None:
+            fields["task_attempt"] = request.task_attempt
+        return fields
+
     @property
     def provider_id(self) -> ProviderId:
         return self._provider_id
@@ -91,6 +102,7 @@ class BaseRemoteProvider:
 
         self._validator.validate(request)
         model = request.model
+        correlation = self._telemetry_correlation(request)
 
         try:
             self._injection_gate.evaluate(request)
@@ -100,6 +112,7 @@ class BaseRemoteProvider:
                 error=err,
                 latency_ms=0.0,
                 span=None,
+                **correlation,
             )
             raise
 
@@ -111,6 +124,7 @@ class BaseRemoteProvider:
                 error=err,
                 latency_ms=0.0,
                 span=None,
+                **correlation,
             )
             raise
 
@@ -132,6 +146,7 @@ class BaseRemoteProvider:
                     error=err,
                     latency_ms=ctx.vendor_phase_latency_ms,
                     span=span,
+                    **correlation,
                 )
                 raise
 
@@ -147,6 +162,7 @@ class BaseRemoteProvider:
                     error=err,
                     latency_ms=ctx.vendor_phase_latency_ms,
                     span=span,
+                    **correlation,
                 )
                 raise
             except VendorTransportError as vte:
@@ -157,6 +173,7 @@ class BaseRemoteProvider:
                     error=error,
                     latency_ms=ctx.vendor_phase_latency_ms,
                     span=span,
+                    **correlation,
                 )
                 raise error from vte
 
@@ -169,6 +186,7 @@ class BaseRemoteProvider:
                     error=err,
                     latency_ms=ctx.vendor_phase_latency_ms,
                     span=span,
+                    **correlation,
                 )
                 raise
 
@@ -186,6 +204,7 @@ class BaseRemoteProvider:
             latency_ms=ctx.vendor_phase_latency_ms,
             token_usage=vendor_result.token_usage,  # type: ignore[attr-defined]
             span=span,
+            **correlation,
         )
         return response
 

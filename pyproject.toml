@@ -25,6 +25,7 @@ dependencies = [
     "fastapi>=0.115.0",
     "uvicorn>=0.30.0,<1",
     "httpx2>=2.0.0",
+    "PyYAML>=6.0",
 ]
 
 [project.scripts]
@@ -34,7 +35,7 @@ cartoon-demo-worker = "runtime.runners:_entry_worker"
 cartoon-demo-cli = "cli.runner:_entry_cli"
 
 [tool.pytest.ini_options]
-pythonpath = ["src"]
+pythonpath = ["src", "."]
 testpaths = ["tests"]
 addopts = ["--import-mode=importlib"]
 markers = [
@@ -52,10 +53,13 @@ markers = [
     "wkr_tc: worker contract test case ID",
     "cli_tc: cli contract test case ID",
     "runtime_tc: runtime contract test case ID",
+    "integration: Phase 81 composition / E2E integration test",
+    "it_int: IT-INT-* catalogue case",
 ]
 
 [project.optional-dependencies]
 dev = [
+    "pytest>=8.0",
     "opentelemetry-api>=1.20",
     "opentelemetry-sdk>=1.20",
     "testcontainers[postgres]>=4.0",
