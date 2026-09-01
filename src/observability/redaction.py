@@ -2,6 +2,7 @@
 
 # DISTRIBUTED-SYSTEMS SHOWCASE: Safe observability — prompts, API keys, and tokens
 # are redacted from logs and traces so production telemetry does not leak secrets.
+# GUARDRAIL: Security — forbid prompts, credentials, and bodies in logs/traces.
 
 from __future__ import annotations
 

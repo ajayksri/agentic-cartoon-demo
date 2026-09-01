@@ -1,5 +1,7 @@
 """Pure task envelope validation (LLD §3.1)."""
 
+# GUARDRAIL: Input — reject malformed queue messages at dequeue boundary before handler runs.
+
 from __future__ import annotations
 
 from datetime import datetime, timezone

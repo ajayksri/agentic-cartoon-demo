@@ -1,5 +1,7 @@
 """Story normalization pipeline: URL canonicalization, content guard, and normalizer."""
 
+# GUARDRAIL: Input — sanitize untrusted HN content before it reaches any agent.
+
 from __future__ import annotations
 
 import re

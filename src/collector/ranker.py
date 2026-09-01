@@ -1,5 +1,7 @@
 """Story ranking and scoring weight resolution."""
 
+# GUARDRAIL: Input — deterministic candidate reduction caps how many stories agents evaluate.
+
 from __future__ import annotations
 
 from collections.abc import Sequence

@@ -2,6 +2,7 @@
 
 # DISTRIBUTED-SYSTEMS SHOWCASE: Failure injection at boundaries — deliberate crashes,
 # duplicate delivery, and provider errors validate resilience without ad-hoc test patches.
+# GUARDRAIL: Security — failure hooks are config-gated only; never exposed on public API.
 
 from __future__ import annotations
 

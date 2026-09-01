@@ -2,6 +2,7 @@
 
 # DISTRIBUTED-SYSTEMS SHOWCASE: Structured observability contracts — every log event
 # carries workflow/task correlation and retry metadata required for agent run debugging.
+# GUARDRAIL: Audit — enforce required correlation fields on logs for traceable agent decisions.
 
 from __future__ import annotations
 

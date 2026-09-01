@@ -1,5 +1,7 @@
 """Config validation stages S3–S6: referential, numeric, prompt, credentials."""
 
+# GUARDRAIL: Configuration — reject invalid config at startup before any agent process runs.
+
 from __future__ import annotations
 
 from collections.abc import Mapping

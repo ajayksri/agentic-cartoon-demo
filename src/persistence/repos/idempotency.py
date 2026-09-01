@@ -1,5 +1,7 @@
 """PostgreSQL idempotency repository implementation."""
 
+# GUARDRAIL: Execution — database-enforced insert-once prevents duplicate authoritative completions.
+
 from __future__ import annotations
 
 from datetime import UTC, datetime

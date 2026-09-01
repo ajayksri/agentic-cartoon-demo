@@ -1,5 +1,7 @@
 """Story deduplication by source identity."""
 
+# GUARDRAIL: Input — reject duplicate stories so agents see a bounded, deduplicated set.
+
 from __future__ import annotations
 
 from collections.abc import Sequence
