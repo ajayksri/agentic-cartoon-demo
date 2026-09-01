@@ -1,0 +1,18 @@
+{
+  "outcome": "topic_selected",
+  "selected_topic": "Rust async patterns",
+  "why_interesting": "Developers debate memory safety versus async ergonomics daily",
+  "cartoon_angle": "Two crabs fighting over a shell labeled borrow checker",
+  "scores": {
+    "technical_relevance": 0.85,
+    "developer_relevance": 0.9,
+    "discussion_interest": 0.75,
+    "humour_potential": 0.8,
+    "irony_contradiction": 0.6,
+    "visual_scenario_potential": 0.85,
+    "background_knowledge_required": 0.4
+  },
+  "alternatives": [
+    {"topic": "Go generics", "rationale": "Also topical but less visual"}
+  ]
+}

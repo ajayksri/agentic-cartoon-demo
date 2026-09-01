@@ -1,0 +1,11 @@
+{
+  "topic": "Rust async patterns",
+  "premise": "Two developers argue about async runtime choices",
+  "characters": ["Alice", "Bob"],
+  "panels": [
+    {"scene": "Office desk", "dialogue": "Async is too hard!"},
+    {"scene": "Office desk", "dialogue": "Just use await everywhere!"},
+    {"scene": "Office desk", "dialogue": "That blocks the executor!"}
+  ],
+  "punchline": "They both ship blocking I/O anyway."
+}

@@ -5,6 +5,9 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 where = ["src"]
 
+[tool.setuptools.package-data]
+agents = ["schemas/*.json"]
+
 [project]
 name = "agentic-cartoon-demo"
 version = "0.1.0"
@@ -18,6 +21,10 @@ dependencies = [
     "openai>=1.55.0,<2",
     "anthropic>=0.45.0,<1",
     "google-genai>=2.0.0,<3",
+    "jsonschema>=4.20.0,<5",
+    "fastapi>=0.115.0",
+    "uvicorn>=0.30.0,<1",
+    "httpx2>=2.0.0",
 ]
 
 [tool.pytest.ini_options]
@@ -33,6 +40,9 @@ markers = [
     "ct_finj: failure_injection contract test case ID",
     "col_tc: collector contract test case ID",
     "prv_tc: providers contract test case ID",
+    "wf_tc: workflow contract test case ID",
+    "agt_tc: agents contract test case ID",
+    "api_tc: api contract test case ID",
 ]
 
 [project.optional-dependencies]

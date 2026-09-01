@@ -1,0 +1,47 @@
+"""Route path constants and route module registry."""
+
+from __future__ import annotations
+
+from ..constants import (
+    METHOD_GET,
+    METHOD_POST,
+    PATH_HEALTH,
+    PATH_READY,
+    PATH_WORKFLOW_APPROVAL,
+    PATH_WORKFLOW_BY_ID,
+    PATH_WORKFLOW_HISTORY,
+    PATH_WORKFLOW_OUTPUT,
+    PATH_WORKFLOW_TIMELINE,
+    PATH_WORKFLOWS,
+    ROUTE_APPROVAL,
+    ROUTE_HEALTH,
+    ROUTE_HISTORY,
+    ROUTE_INITIATE,
+    ROUTE_MODULES,
+    ROUTE_OUTPUT,
+    ROUTE_READY,
+    ROUTE_STATUS,
+    ROUTE_TIMELINE,
+)
+
+__all__ = [
+    "METHOD_GET",
+    "METHOD_POST",
+    "PATH_HEALTH",
+    "PATH_READY",
+    "PATH_WORKFLOW_APPROVAL",
+    "PATH_WORKFLOW_BY_ID",
+    "PATH_WORKFLOW_HISTORY",
+    "PATH_WORKFLOW_OUTPUT",
+    "PATH_WORKFLOW_TIMELINE",
+    "PATH_WORKFLOWS",
+    "ROUTE_APPROVAL",
+    "ROUTE_HEALTH",
+    "ROUTE_HISTORY",
+    "ROUTE_INITIATE",
+    "ROUTE_MODULES",
+    "ROUTE_OUTPUT",
+    "ROUTE_READY",
+    "ROUTE_STATUS",
+    "ROUTE_TIMELINE",
+]

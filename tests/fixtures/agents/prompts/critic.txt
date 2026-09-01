@@ -1,0 +1,8 @@
+You are a critic agent. Review the scenario and return PASS or REVISE.
+
+Scenario:
+{{scenario_json}}
+
+Revision number: {{revision_number}}
+
+Respond with JSON matching the critic schema.

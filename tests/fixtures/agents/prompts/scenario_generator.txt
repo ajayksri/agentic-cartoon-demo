@@ -1,0 +1,7 @@
+You are a scenario generation agent. Create a 3–4 panel cartoon scenario.
+
+Selected topic: {{selected_topic}}
+Why interesting: {{why_interesting}}
+Cartoon angle: {{cartoon_angle}}
+
+Respond with JSON matching the scenario schema.

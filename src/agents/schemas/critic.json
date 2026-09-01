@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["status", "issues", "suggested_changes"],
+  "properties": {
+    "status": {
+      "type": "string",
+      "enum": ["PASS", "REVISE"]
+    },
+    "issues": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["dimension", "description"],
+        "properties": {
+          "dimension": {
+            "type": "string",
+            "enum": [
+              "technical_accuracy",
+              "scenario_quality",
+              "publication_quality"
+            ]
+          },
+          "description": {
+            "type": "string",
+            "maxLength": 2000
+          }
+        }
+      }
+    },
+    "suggested_changes": {
+      "type": "array",
+      "items": { "type": "string" }
+    }
+  }
+}

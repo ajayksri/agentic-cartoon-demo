@@ -1,0 +1,88 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["outcome"],
+  "properties": {
+    "outcome": {
+      "type": "string",
+      "enum": ["topic_selected", "no_suitable_topic"]
+    },
+    "selected_topic": { "type": ["string", "null"] },
+    "why_interesting": { "type": ["string", "null"] },
+    "cartoon_angle": { "type": ["string", "null"] },
+    "scores": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "properties": {
+        "technical_relevance": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "developer_relevance": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "discussion_interest": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "humour_potential": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "irony_contradiction": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "visual_scenario_potential": { "type": "number", "minimum": 0.0, "maximum": 1.0 },
+        "background_knowledge_required": { "type": "number", "minimum": 0.0, "maximum": 1.0 }
+      },
+      "required": [
+        "technical_relevance",
+        "developer_relevance",
+        "discussion_interest",
+        "humour_potential",
+        "irony_contradiction",
+        "visual_scenario_potential",
+        "background_knowledge_required"
+      ]
+    },
+    "alternatives": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["topic", "rationale"],
+        "properties": {
+          "topic": { "type": "string" },
+          "rationale": { "type": "string" }
+        }
+      }
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": { "outcome": { "const": "topic_selected" } },
+        "required": ["outcome"]
+      },
+      "then": {
+        "required": [
+          "selected_topic",
+          "why_interesting",
+          "cartoon_angle",
+          "scores",
+          "alternatives"
+        ],
+        "properties": {
+          "selected_topic": { "type": "string" },
+          "why_interesting": { "type": "string" },
+          "cartoon_angle": { "type": "string" },
+          "scores": { "type": "object" }
+        }
+      }
+    },
+    {
+      "if": {
+        "properties": { "outcome": { "const": "no_suitable_topic" } },
+        "required": ["outcome"]
+      },
+      "then": {
+        "required": ["alternatives"],
+        "properties": {
+          "selected_topic": { "type": "null" },
+          "why_interesting": { "type": "null" },
+          "cartoon_angle": { "type": "null" },
+          "scores": { "type": "null" },
+          "alternatives": { "maxItems": 0 }
+        }
+      }
+    }
+  ]
+}
