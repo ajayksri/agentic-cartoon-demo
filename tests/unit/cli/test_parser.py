@@ -42,6 +42,12 @@ def test_parse_status_workflow_id() -> None:
     assert parsed.workflow_id == "wf-123"
 
 
+def test_parse_status_with_workflow_id_flag() -> None:
+    parsed = _parser().parse(["status", "--workflow-id", "wf-123"])
+    assert parsed.subcommand_id == SubcommandId.STATUS
+    assert parsed.workflow_id == "wf-123"
+
+
 def test_parse_resolves_subcommand_from_registry_specs() -> None:
     registry = _registry()
     parsed = ArgumentParser(registry=registry).parse(["status", "wf-1"])

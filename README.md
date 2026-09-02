@@ -6,7 +6,7 @@ Compact agentic AI workflow demonstrator: collect Hacker News stories, select a 
 
 | Item | Value |
 | --- | --- |
-| Package | `agentic-cartoon-demo` 0.1.0.dev0 |
+| Package | `agentic-cartoon-demo` 0.1.0 |
 | Python | 3.11+ |
 | Install | `pip install -e ".[dev]"` (from repo root) |
 

@@ -43,6 +43,10 @@ def test_validate_approval_action_rejects_unknown(validator: InputValidator) -> 
         validator.validate_approval_action("INVALID")
 
 
+def test_validate_approval_action_normalizes_case(validator: InputValidator) -> None:
+    assert validator.validate_approval_action("approve") == "APPROVE"
+
+
 def test_sanitize_rejects_control_chars(validator: InputValidator) -> None:
     with pytest.raises(CliUsageError):
         validator._sanitize_printable_ascii(

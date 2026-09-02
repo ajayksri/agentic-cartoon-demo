@@ -73,7 +73,7 @@ class RequestValidator:
         header_idempotency_key: str | None = None,
     ) -> SubmitApprovalApiRequest:
         try:
-            parsed_action = ApprovalAction(action)
+            parsed_action = ApprovalAction(action.strip().upper())
         except ValueError as exc:
             raise ApiValidationError("action must be a valid ApprovalAction") from exc
 

@@ -17,7 +17,10 @@ class ApproveHandler(BaseSubcommandHandler):
         parsed = self._dispatch.parsed
         workflow_id = self._validator.validate_workflow_id(parsed.workflow_id, required=True)
         action_token = self._validator.validate_approval_action(parsed.approval_action)
-        request = SubmitApprovalApiRequest(action=action_token)  # type: ignore[arg-type]
+        request = SubmitApprovalApiRequest(
+            action=action_token,  # type: ignore[arg-type]
+            actor=parsed.approval_actor,
+        )
         response = self._async_runner.run(
             ctx.api_client.submit_approval(workflow_id, request)
         )

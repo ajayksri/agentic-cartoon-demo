@@ -54,6 +54,7 @@ class ParsedCliInvocation:
     workflow_id: str | None
     initiate_request: InitiateWorkflowApiRequest | None
     approval_action: str | None
+    approval_actor: str | None
     raw_args: tuple[str, ...]
 
 
@@ -152,6 +153,7 @@ class ArgumentParser:
         workflow_id: str | None = None
         initiate_request: InitiateWorkflowApiRequest | None = None
         approval_action: str | None = None
+        approval_actor: str | None = None
 
         if subcommand_id == SubcommandId.INITIATE:
             initiate_args = _parse_initiate_args(subcommand_args)
@@ -161,14 +163,15 @@ class ArgumentParser:
                 actor=initiate_args.get("actor"),
             )
         elif subcommand_id == SubcommandId.APPROVE:
-            workflow_id, action_token = _parse_approve_args(subcommand_args)
+            workflow_id, action_token, approval_actor = _parse_approve_args(subcommand_args)
             workflow_id = self._validator.validate_workflow_id(workflow_id, required=True)
             approval_action = self._validator.validate_approval_action(action_token)
+            if approval_actor is not None:
+                approval_actor = self._validator.validate_actor(approval_actor, required=True)
         else:
-            if not subcommand_args or len(subcommand_args) != 1:
-                raise CliUsageError(f"{subcommand_token} requires a workflow_id argument")
+            workflow_id = _parse_workflow_id_args(subcommand_args, subcommand_token)
             workflow_id = self._validator.validate_workflow_id(
-                subcommand_args[0],
+                workflow_id,
                 required=True,
             )
 
@@ -179,6 +182,7 @@ class ArgumentParser:
             workflow_id=workflow_id,
             initiate_request=initiate_request,
             approval_action=approval_action,
+            approval_actor=approval_actor,
             raw_args=tuple(argv),
         )
 
@@ -234,20 +238,56 @@ def _parse_initiate_args(args: Sequence[str]) -> dict[str, str | None]:
     return values
 
 
-def _parse_approve_args(args: Sequence[str]) -> tuple[str | None, str | None]:
-    if not args:
-        raise CliUsageError("approve requires a workflow_id argument")
-    workflow_id = args[0]
-    action: str | None = None
-    index = 1
+def _parse_workflow_id_args(args: Sequence[str], subcommand_token: str) -> str:
+    workflow_id: str | None = None
+    index = 0
     while index < len(args):
         token = args[index]
-        if token == FLAG_ACTION:
+        if token == FLAG_WORKFLOW_ID:
+            if workflow_id is not None:
+                raise CliUsageError(f"{subcommand_token} accepts only one workflow_id argument")
+            workflow_id = _require_value(args, index, token)
+            index += 2
+        elif token.startswith("-"):
+            raise CliUsageError(f"Unknown {subcommand_token} flag: {token}")
+        else:
+            if workflow_id is not None:
+                raise CliUsageError(f"{subcommand_token} accepts only one workflow_id argument")
+            workflow_id = token
+            index += 1
+    if workflow_id is None:
+        raise CliUsageError(f"{subcommand_token} requires a workflow_id argument")
+    return workflow_id
+
+
+def _parse_approve_args(args: Sequence[str]) -> tuple[str | None, str | None, str | None]:
+    workflow_id: str | None = None
+    action: str | None = None
+    actor: str | None = None
+    index = 0
+    while index < len(args):
+        token = args[index]
+        if token == FLAG_WORKFLOW_ID:
+            if workflow_id is not None:
+                raise CliUsageError("approve accepts only one workflow_id argument")
+            workflow_id = _require_value(args, index, token)
+            index += 2
+        elif token == FLAG_ACTION:
             action = _require_value(args, index, token)
             index += 2
-        else:
+        elif token == FLAG_ACTOR:
+            actor = _require_value(args, index, token)
+            index += 2
+        elif token.startswith("-"):
             raise CliUsageError(f"Unknown approve flag: {token}")
-    return workflow_id, action
+        else:
+            if workflow_id is not None:
+                raise CliUsageError("approve accepts only one workflow_id argument")
+            workflow_id = token
+            index += 1
+    if workflow_id is None:
+        raise CliUsageError("approve requires a workflow_id argument")
+    return workflow_id, action, actor
 
 
 def _require_value(args: Sequence[str], index: int, flag: str) -> str:

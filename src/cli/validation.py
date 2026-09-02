@@ -69,10 +69,18 @@ class InputValidator:
     def validate_approval_action(self, raw: str | None) -> str:
         if raw is None:
             raise CliUsageError("action is required")
-        token = raw.strip()
+        token = raw.strip().upper()
         if token not in _VALID_APPROVAL_ACTIONS:
-            raise CliUsageError(f"Unknown approval action: {token}")
+            raise CliUsageError(f"Unknown approval action: {raw.strip()}")
         return token
+
+    def validate_actor(self, raw: str | None, *, required: bool = False) -> str | None:
+        return self._sanitize_printable_ascii(
+            raw,
+            field="actor",
+            max_len=MAX_ACTOR_LEN,
+            required=required,
+        )
 
     @staticmethod
     def _sanitize_printable_ascii(
