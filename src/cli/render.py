@@ -15,6 +15,8 @@ from api.types import (
     WorkflowTimelineResponse,
 )
 
+from .approval_review import build_approval_review, format_approval_review
+
 
 class OutputFormat(StrEnum):
     TEXT = "text"
@@ -66,11 +68,8 @@ class OutputRenderer:
         out: TextIO | None = None,
     ) -> None:
         sink = out or sys.stdout
-        keys = ", ".join(sorted(str(key) for key in response.package.keys()))
-        sink.write(f"workflow_id: {response.workflow_id}\n")
-        sink.write(f"state: {response.state.value}\n")
-        sink.write(f"is_complete: {response.is_complete}\n")
-        sink.write(f"package_keys: {keys}\n")
+        review = build_approval_review(response)
+        sink.write(format_approval_review(review))
 
     def render_timeline(
         self,

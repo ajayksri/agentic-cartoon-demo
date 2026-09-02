@@ -276,16 +276,17 @@ print('Critic verdict:', critic.get('verdict', '(missing)'))
 "
 ```
 
-#### CLI (metadata summary)
+#### CLI (approval review)
 
-The CLI prints package key names and completion status only (no artifact bodies):
+Shows topic, scenario, and critic verdict for human review (no source stories or
+execution metadata):
 
 ```bash
 cartoon-demo-cli output --workflow-id "$WORKFLOW_ID"
 ```
 
-Expected `package_keys` include `topic`, `scenario`, `critic`, `source`, `execution`.
-Use the HTTP commands above to read the actual scenario content.
+Use `cartoon-demo-cli status` for workflow state. Use the HTTP command below for the
+full audit package including source stories.
 
 ### 6.4 Submit human approval
 
@@ -390,7 +391,7 @@ Workflows remain durable in PostgreSQL; in-flight tasks may redeliver on restart
 | Workflow stuck early | Only one worker role running — start all four TaskTypes |
 | HN fetch failures during COLLECT | Network required for Hacker News API (collector); not an LLM call |
 | Approval rejected (409) | Workflow not in `AWAITING_HUMAN_APPROVAL` — check status first |
-| `output` shows keys but no scenario text | CLI omits artifact bodies by design — use `GET /workflows/{id}/output` (§6.3) |
+| `output` shows keys but no scenario text | Stale CLI — reinstall package; `output` prints approval review fields |
 
 ---
 

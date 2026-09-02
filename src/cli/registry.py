@@ -50,7 +50,7 @@ def build_default_subcommand_registry(
         SubcommandId.OUTPUT: SubcommandSpec(
             id=SubcommandId.OUTPUT,
             name="output",
-            description="Retrieve workflow output package",
+            description="Review workflow output for human approval",
             requires_workflow_id=True,
         ),
         SubcommandId.TIMELINE: SubcommandSpec(
