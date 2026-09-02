@@ -83,7 +83,8 @@ class ReadModelAssembler:
                     "artifact_id": topic.artifact_id,
                     "version": topic.version,
                     "selected_topic": content.get("selected_topic", ""),
-                    "rationale": content.get("rationale", ""),
+                    "rationale": content.get("rationale")
+                    or content.get("why_interesting", ""),
                     "confidence": content.get("confidence"),
                     "content": content,
                 }
@@ -114,7 +115,7 @@ class ReadModelAssembler:
                 package["critic"] = {
                     "artifact_id": critic.artifact_id,
                     "version": critic.version,
-                    "verdict": content.get("verdict", ""),
+                    "verdict": content.get("verdict") or content.get("status", ""),
                     "dimensions": content.get("dimensions", {}),
                     "content": content,
                 }

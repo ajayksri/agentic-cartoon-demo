@@ -47,15 +47,18 @@ def build_approval_review(response: WorkflowOutputResponse) -> ApprovalReview:
     return ApprovalReview(
         workflow_id=response.workflow_id,
         topic_selected=_optional_str(topic.get("selected_topic")),
-        topic_rationale=_optional_str(topic.get("rationale")),
+        topic_rationale=_first_str(topic, "rationale", "why_interesting"),
         scenario_artifact_id=_optional_str(scenario.get("artifact_id")),
         scenario_logical_version=_optional_int(scenario.get("logical_version")),
         premise=_optional_str(scenario.get("premise")),
         characters=_characters(scenario.get("characters")),
         panels=_panels(scenario.get("panels")),
         punchline=_optional_str(scenario.get("punchline")),
-        critic_verdict=_optional_str(critic.get("verdict")),
-        critic_dimensions=_dimensions(critic.get("dimensions")),
+        critic_verdict=_first_str(critic, "verdict", "status"),
+        critic_dimensions=_dimensions_or_issues(
+            critic.get("dimensions"),
+            critic.get("issues"),
+        ),
     )
 
 
@@ -96,6 +99,8 @@ def format_approval_review(review: ApprovalReview) -> str:
         lines.append("  dimensions:")
         for key, value in review.critic_dimensions:
             lines.append(f"    {key}: {value}")
+    elif review.critic_verdict is not None:
+        lines.append("  dimensions: (none)")
     else:
         lines.append("  dimensions: (not available yet)")
 
@@ -154,11 +159,39 @@ def _panels(value: object) -> tuple[PanelReview, ...]:
         panels.append(
             PanelReview(
                 index=index,
-                scene=_optional_str(item.get("scene")),
+                scene=_first_str(item, "scene", "caption"),
                 dialogue=_optional_str(item.get("dialogue")),
             )
         )
     return tuple(panels)
+
+
+def _first_str(mapping: Mapping[str, Any], *keys: str) -> str | None:
+    for key in keys:
+        value = _optional_str(mapping.get(key))
+        if value is not None:
+            return value
+    return None
+
+
+def _dimensions_or_issues(
+    dimensions: object,
+    issues: object,
+) -> tuple[tuple[str, str], ...]:
+    pairs = _dimensions(dimensions)
+    if pairs:
+        return pairs
+    if not isinstance(issues, list):
+        return ()
+    rendered: list[tuple[str, str]] = []
+    for item in issues:
+        if not isinstance(item, dict):
+            continue
+        dimension = _optional_str(item.get("dimension"))
+        description = _optional_str(item.get("description"))
+        if dimension is not None and description is not None:
+            rendered.append((dimension, description))
+    return tuple(rendered)
 
 
 def _dimensions(value: object) -> tuple[tuple[str, str], ...]:

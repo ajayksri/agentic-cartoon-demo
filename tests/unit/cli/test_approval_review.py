@@ -18,7 +18,7 @@ def _sample_package() -> dict[str, object]:
         },
         "topic": {
             "selected_topic": "Rust async patterns",
-            "rationale": "Timely and humorous",
+            "why_interesting": "Timely and humorous",
             "content": {"selected_topic": "ignored nested blob"},
         },
         "scenario": {
@@ -27,16 +27,16 @@ def _sample_package() -> dict[str, object]:
             "premise": "Two developers argue about async runtime choices",
             "characters": ["Alice", "Bob"],
             "panels": [
-                {"scene": "Office desk", "dialogue": "Async is too hard!"},
-                {"scene": "Office desk", "dialogue": "Just use await everywhere!"},
+                {"caption": "Office desk", "dialogue": "Async is too hard!"},
+                {"caption": "Office desk", "dialogue": "Just use await everywhere!"},
             ],
             "punchline": "They both ship blocking I/O anyway.",
             "content": {"premise": "should not print raw content blob"},
         },
         "critic": {
-            "verdict": "PASS",
-            "dimensions": {"humor": 5, "accuracy": 4},
-            "content": {"verdict": "PASS"},
+            "status": "PASS",
+            "issues": [],
+            "content": {"status": "PASS"},
         },
         "execution": {
             "invocations": [{"agent_name": "scenario_generator", "provider": "fake"}],
@@ -66,7 +66,7 @@ def test_build_approval_review_extracts_review_fields() -> None:
     assert review.panels[0].dialogue == "Async is too hard!"
     assert review.punchline == "They both ship blocking I/O anyway."
     assert review.critic_verdict == "PASS"
-    assert review.critic_dimensions == (("accuracy", "4"), ("humor", "5"))
+    assert review.critic_dimensions == ()
 
 
 def test_format_approval_review_shows_scenario_and_excludes_source() -> None:
@@ -87,13 +87,68 @@ def test_format_approval_review_shows_scenario_and_excludes_source() -> None:
     assert "dialogue: Async is too hard!" in rendered
     assert "punchline: They both ship blocking I/O anyway." in rendered
     assert "verdict: PASS" in rendered
-    assert "humor: 5" in rendered
+    assert "dimensions: (none)" in rendered
     assert "secret story" not in rendered
     assert "api_key" not in rendered
     assert "hidden" not in rendered
     assert "token" not in rendered
     assert "raw content blob" not in rendered
     assert "invocations" not in rendered
+
+
+def test_build_approval_review_maps_persisted_artifact_field_names() -> None:
+    response = WorkflowOutputResponse(
+        workflow_id="wf-live",
+        state=WorkflowState.AWAITING_HUMAN_APPROVAL,
+        package={
+            "topic": {
+                "selected_topic": "Rust async patterns",
+                "rationale": "",
+                "why_interesting": "Because async debates are funny",
+            },
+            "scenario": {
+                "artifact_id": "art-1",
+                "logical_version": 1,
+                "premise": "Two developers argue",
+                "characters": [{"name": "Alice", "role": "character"}],
+                "panels": [{"caption": "Office desk", "dialogue": "Async is too hard!"}],
+                "punchline": "They ship blocking I/O anyway.",
+            },
+            "critic": {"verdict": "", "status": "PASS", "issues": []},
+        },
+        is_complete=False,
+    )
+
+    review = build_approval_review(response)
+
+    assert review.topic_rationale == "Because async debates are funny"
+    assert review.panels[0].scene == "Office desk"
+    assert review.critic_verdict == "PASS"
+
+
+def test_build_approval_review_formats_critic_issues_when_dimensions_empty() -> None:
+    response = WorkflowOutputResponse(
+        workflow_id="wf-revise",
+        state=WorkflowState.AWAITING_HUMAN_APPROVAL,
+        package={
+            "critic": {
+                "status": "REVISE",
+                "dimensions": {},
+                "issues": [
+                    {
+                        "dimension": "humor",
+                        "description": "Punchline is too subtle",
+                    }
+                ],
+            },
+        },
+        is_complete=False,
+    )
+
+    review = build_approval_review(response)
+
+    assert review.critic_verdict == "REVISE"
+    assert review.critic_dimensions == (("humor", "Punchline is too subtle"),)
 
 
 def test_format_approval_review_handles_missing_sections() -> None:
