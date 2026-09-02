@@ -1,6 +1,6 @@
-# Local demo config template
+# Local demo config template (PD-001 / OPS-001).
 # Copy to config/cartoon.yaml or set CARTOON_CONFIG_PATH to this file.
-# All agents use provider "fake" — no paid LLM credentials required.
+# All agents use provider "fake" — no paid LLM credentials required (ACD-NFR-011).
 
 config_version: "1"
 
@@ -20,15 +20,15 @@ agents:
   topic_selector:
     provider: fake
     model: fake-model
-    prompt_file: tests/fixtures/agents/prompts/topic_selector.txt
+    prompt_file: prompts/topic_selector/v1.txt
   scenario_generator:
     provider: fake
     model: fake-model
-    prompt_file: tests/fixtures/agents/prompts/scenario_generator.txt
+    prompt_file: prompts/scenario_generator/v1.txt
   critic:
     provider: fake
     model: fake-model
-    prompt_file: tests/fixtures/agents/prompts/critic.txt
+    prompt_file: prompts/critic/v1.txt
 
 providers:
   fake:

@@ -247,9 +247,10 @@ def test_wkr_tc_023_exhausted_retries_to_failed_permanently() -> None:
 
 @pytest.mark.wkr_tc("024")
 def test_wkr_tc_024_invalid_agent_output_no_transition() -> None:
-    """WKR-TC-024: AgentOutputValidationError — no successful stage transition."""
+    """WKR-TC-024: AgentOutputValidationError — no stage completion; workflow fails."""
     from agents import AgentOutputValidationError
     from config.types import AgentId
+    from workflow.types import TransitionSignal
 
     handler = RecordingHandler(
         _task_type=TaskType.SELECT_TOPIC,
@@ -257,7 +258,11 @@ def test_wkr_tc_024_invalid_agent_output_no_transition() -> None:
     )
     fixture = memory_worker_loop(config=minimal_worker_config(), handlers=[handler])
     _process_one_delivery(fixture, minimal_pending_delivery(task_type=TaskType.SELECT_TOPIC))
-    assert not fixture.engine.transitions
+    assert fixture.engine.transitions
+    assert fixture.engine.transitions[-1].signal == TransitionSignal.UNRECOVERABLE_ERROR
+    assert TransitionSignal.STAGE_COMPLETED not in {
+        transition.signal for transition in fixture.engine.transitions
+    }
 
 
 @pytest.mark.wkr_tc("030")

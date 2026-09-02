@@ -411,9 +411,9 @@ def test_cfg_tc_016_prompt_file_path_referenced(
     app_config = load_config(write_config(tmp_path, minimal_valid_config()))
 
     expected_prompt_files = {
-        AgentId.TOPIC_SELECTOR: "prompts/topic_selector.txt",
-        AgentId.SCENARIO_GENERATOR: "prompts/scenario_generator.txt",
-        AgentId.CRITIC: "prompts/critic.txt",
+        AgentId.TOPIC_SELECTOR: "prompts/topic_selector/v1.txt",
+        AgentId.SCENARIO_GENERATOR: "prompts/scenario_generator/v1.txt",
+        AgentId.CRITIC: "prompts/critic/v1.txt",
     }
     for agent_id, prompt_file in expected_prompt_files.items():
         assert app_config.get_agent_config(agent_id).prompt_file == prompt_file

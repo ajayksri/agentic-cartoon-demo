@@ -33,17 +33,17 @@ def _minimal_valid_config_dict() -> dict[str, Any]:
             "topic_selector": {
                 "provider": "gemini",
                 "model": "gemini-pro",
-                "prompt_file": "prompts/topic_selector.txt",
+                "prompt_file": "prompts/topic_selector/v1.txt",
             },
             "scenario_generator": {
                 "provider": "openai",
                 "model": "gpt-4",
-                "prompt_file": "prompts/scenario_generator.txt",
+                "prompt_file": "prompts/scenario_generator/v1.txt",
             },
             "critic": {
                 "provider": "anthropic",
                 "model": "claude-3",
-                "prompt_file": "prompts/critic.txt",
+                "prompt_file": "prompts/critic/v1.txt",
             },
         },
         "providers": {

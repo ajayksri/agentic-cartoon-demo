@@ -17,6 +17,8 @@ from providers import GenerateResponse, TokenUsage
 
 
 _FIXTURES = Path(__file__).resolve().parents[2] / "fixtures" / "agents"
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_PROMPTS = _REPO_ROOT / "prompts"
 
 
 def _topic_selected_output() -> TopicSelectionOutput:
@@ -58,7 +60,7 @@ def test_scenario_agent_smoke_with_fake_provider() -> None:
     config = update_agent_prompt_file(
         config,
         agent_id=AgentId.SCENARIO_GENERATOR,
-        prompt_file=str(_FIXTURES / "prompts" / "scenario_generator.txt"),
+        prompt_file=str(_PROMPTS / "scenario_generator" / "v1.txt"),
     )
     provider = create_capturing_fake_provider(config)
     provider.set_next_response(

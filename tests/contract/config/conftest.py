@@ -34,9 +34,9 @@ def prompt_files(tmp_path: Path) -> dict[str, Path]:
     """Create dummy prompt files referenced by minimal_valid_config."""
     paths: dict[str, Path] = {}
     for rel in (
-        "prompts/topic_selector.txt",
-        "prompts/scenario_generator.txt",
-        "prompts/critic.txt",
+        "prompts/topic_selector/v1.txt",
+        "prompts/scenario_generator/v1.txt",
+        "prompts/critic/v1.txt",
     ):
         target = tmp_path / rel
         target.parent.mkdir(parents=True, exist_ok=True)

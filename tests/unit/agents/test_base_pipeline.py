@@ -188,7 +188,7 @@ def _run_context(*, provider: object) -> object:
             AgentId.TOPIC_SELECTOR: AgentDraft(
                 provider=ProviderId.FAKE,
                 model="fake-model",
-                prompt_file="tests/fixtures/agents/prompts/topic_selector.txt",
+                prompt_file="prompts/topic_selector/v1.txt",
             ),
         },
         providers={

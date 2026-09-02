@@ -437,7 +437,7 @@ def _minimal_app_config_for_merge() -> AppConfig:
             AgentId.TOPIC_SELECTOR: AgentConfig(
                 provider=ProviderId.GEMINI,
                 model="gemini-pro",
-                prompt_file="prompts/topic_selector.txt",
+                prompt_file="prompts/topic_selector/v1.txt",
             ),
         },
         providers={

@@ -210,17 +210,17 @@ def minimal_worker_config(
             AgentId.TOPIC_SELECTOR: AgentDraft(
                 provider=ProviderId.FAKE,
                 model="fake-model",
-                prompt_file="tests/fixtures/agents/prompts/topic_selector.txt",
+                prompt_file="prompts/topic_selector/v1.txt",
             ),
             AgentId.SCENARIO_GENERATOR: AgentDraft(
                 provider=ProviderId.FAKE,
                 model="fake-model",
-                prompt_file="tests/fixtures/agents/prompts/scenario_generator.txt",
+                prompt_file="prompts/scenario_generator/v1.txt",
             ),
             AgentId.CRITIC: AgentDraft(
                 provider=ProviderId.FAKE,
                 model="fake-model",
-                prompt_file="tests/fixtures/agents/prompts/critic.txt",
+                prompt_file="prompts/critic/v1.txt",
             ),
         },
         providers={

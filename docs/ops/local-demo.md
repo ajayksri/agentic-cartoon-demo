@@ -112,7 +112,7 @@ export CARTOON_CONFIG_PATH="${CARTOON_CONFIG_PATH:-$(pwd)/config/cartoon.yaml}"
 The template sets:
 
 - All agents (`topic_selector`, `scenario_generator`, `critic`) → provider **`fake`**
-- Prompt files under `tests/fixtures/agents/prompts/` (repo-relative paths)
+- Prompt files under `prompts/<agent>/v1.txt` (repo-relative paths)
 - Infrastructure hosts from localhost Compose defaults
 
 Every long-running process calls `config.load_config()` at startup and **fails fast**

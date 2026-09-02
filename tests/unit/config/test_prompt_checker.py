@@ -47,7 +47,7 @@ def test_s5_existing_prompt_file_passes(
 ) -> None:
     """CFG-TC-016 trace: existing prompt file accepted at S5."""
     monkeypatch.chdir(tmp_path)
-    prompt_path = Path("prompts/topic_selector.txt")
+    prompt_path = Path("prompts/topic_selector/v1.txt")
     prompt_path.parent.mkdir(parents=True)
     prompt_path.write_text("prompt body", encoding="utf-8")
     agents = _agent_draft_map(prompt_file=str(prompt_path))

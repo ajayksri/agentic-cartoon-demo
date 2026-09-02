@@ -13,7 +13,6 @@ from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
 from typing import TYPE_CHECKING
 
-from agents.errors import AgentOutputValidationError
 from config.types import AppConfig, InjectionId, TaskType
 from observability import get_correlation_context
 from persistence.types import IdempotencyInsertSpec, TaskStatus as PersistenceTaskStatus
@@ -386,7 +385,6 @@ class DefaultWorkerLoop:
                 )
             except Exception as err:
                 retryable, error_class = self._retry_classifier.classify_exception(err)
-                skip_failure_transition = isinstance(err, AgentOutputValidationError)
                 if retryable and not self._retry_classifier.is_exhausted(
                     attempt=effective_attempt,
                     task_type=task_type,
@@ -410,7 +408,6 @@ class DefaultWorkerLoop:
                             task_type=task_type,
                         ),
                         skip_ack=skip_ack,
-                        skip_transition=skip_failure_transition,
                     )
         finally:
             if lease_id is not None:

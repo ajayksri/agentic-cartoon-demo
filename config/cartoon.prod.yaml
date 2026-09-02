@@ -1,0 +1,113 @@
+# Production config template — real LLM providers (multi-provider layout).
+#
+# Pair with: .env.prod.example → copy to .env.prod and source before starting processes.
+#
+# Usage:
+#   export CARTOON_CONFIG_PATH=config/cartoon.prod.yaml
+#   set -a && source .env.prod && set +a
+#
+# Agent → provider mapping (ACD-CFG-002):
+#   topic_selector     → gemini   (GEMINI_API_KEY)
+#   scenario_generator → openai   (OPENAI_API_KEY)
+#   critic             → anthropic (ANTHROPIC_API_KEY)
+#
+# COLLECT worker does not use an LLM. Kimi is listed under providers for optional
+# reassignment; MOONSHOT_API_KEY is required only if an agent uses provider: kimi.
+#
+# Prompt paths are repo-relative; run processes from repository root or adjust paths.
+
+config_version: "1"
+
+infrastructure:
+  postgres:
+    host: localhost
+    port: 5432
+    database: cartoon
+    user_env: POSTGRES_USER
+    password_env: POSTGRES_PASSWORD
+  redis:
+    host: localhost
+    port: 6379
+    db: 0
+    # Uncomment when Redis requires auth:
+    # password_env: REDIS_PASSWORD
+
+agents:
+  topic_selector:
+    provider: kimi
+    model: kimi-k2.6
+    prompt_file: prompts/topic_selector/v1.txt
+  scenario_generator:
+    provider: kimi
+    model: kimi-k3
+    prompt_file: prompts/scenario_generator/v1.txt
+  critic:
+    provider: kimi
+    model: kimi-k3
+    prompt_file: prompts/critic/v1.txt
+
+providers:
+  openai:
+    api_key_env: OPENAI_API_KEY
+    rate_limit_per_minute: 60
+  anthropic:
+    api_key_env: ANTHROPIC_API_KEY
+  gemini:
+    api_key_env: GEMINI_API_KEY
+  kimi:
+    api_key_env: MOONSHOT_API_KEY
+
+collection:
+  candidate_count: 20
+  scoring:
+    weight_score: 1.0
+    weight_comments: 0.5
+    weight_recency: 0.3
+
+workflow:
+  max_scenario_revisions: 3
+
+workers:
+  topic_selector_concurrency: 2
+  scenario_generator_concurrency: 2
+  critic_concurrency: 2
+
+retry:
+  COLLECT:
+    max_attempts: 3
+    backoff:
+      initial_seconds: 1.0
+      multiplier: 2.0
+      max_seconds: 30.0
+  SELECT_TOPIC:
+    max_attempts: 3
+    backoff:
+      initial_seconds: 1.0
+      multiplier: 2.0
+      max_seconds: 30.0
+  GENERATE_SCENARIO:
+    max_attempts: 3
+    backoff:
+      initial_seconds: 2.0
+      multiplier: 2.0
+      max_seconds: 60.0
+  REVIEW_SCENARIO:
+    max_attempts: 3
+    backoff:
+      initial_seconds: 2.0
+      multiplier: 2.0
+      max_seconds: 60.0
+
+timeouts:
+  openai:
+    read_seconds: 120.0
+  anthropic:
+    read_seconds: 120.0
+  gemini:
+    read_seconds: 120.0
+  kimi:
+    read_seconds: 120.0
+
+failure_injection:
+  enabled: false
+  active_injections: []

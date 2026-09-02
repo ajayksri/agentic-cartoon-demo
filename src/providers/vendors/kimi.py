@@ -14,7 +14,7 @@ from providers.types import GenerateRequest, ProviderMessageRole, TokenUsage
 from providers.internal_types import VendorCallResult, VendorTransportError
 from providers.vendors._transport import VendorTransport
 
-MOONSHOT_API_BASE_URL = "https://api.moonshot.cn/v1"
+MOONSHOT_API_BASE_URL = "https://api.moonshot.ai/v1"
 
 KIMI_ROLE_MAP: Mapping[ProviderMessageRole, str] = {
     ProviderMessageRole.SYSTEM: "system",

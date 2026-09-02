@@ -66,7 +66,7 @@ def test_build_approval_review_extracts_review_fields() -> None:
     assert review.panels[0].dialogue == "Async is too hard!"
     assert review.punchline == "They both ship blocking I/O anyway."
     assert review.critic_verdict == "PASS"
-    assert review.critic_dimensions == ()
+    assert review.critic_issues == ()
 
 
 def test_format_approval_review_shows_scenario_and_excludes_source() -> None:
@@ -87,7 +87,7 @@ def test_format_approval_review_shows_scenario_and_excludes_source() -> None:
     assert "dialogue: Async is too hard!" in rendered
     assert "punchline: They both ship blocking I/O anyway." in rendered
     assert "verdict: PASS" in rendered
-    assert "dimensions: (none)" in rendered
+    assert "issues:" not in rendered
     assert "secret story" not in rendered
     assert "api_key" not in rendered
     assert "hidden" not in rendered
@@ -148,7 +148,32 @@ def test_build_approval_review_formats_critic_issues_when_dimensions_empty() -> 
     review = build_approval_review(response)
 
     assert review.critic_verdict == "REVISE"
-    assert review.critic_dimensions == (("humor", "Punchline is too subtle"),)
+    assert review.critic_issues == (("humor", "Punchline is too subtle"),)
+
+
+def test_format_approval_review_shows_critic_issues_on_revise() -> None:
+    response = WorkflowOutputResponse(
+        workflow_id="wf-revise",
+        state=WorkflowState.REVISION_REQUIRED,
+        package={
+            "critic": {
+                "status": "REVISE",
+                "issues": [
+                    {
+                        "dimension": "humor",
+                        "description": "Punchline is too subtle",
+                    }
+                ],
+            },
+        },
+        is_complete=False,
+    )
+
+    rendered = format_approval_review(build_approval_review(response))
+
+    assert "verdict: REVISE" in rendered
+    assert "issues:" in rendered
+    assert "humor: Punchline is too subtle" in rendered
 
 
 def test_format_approval_review_handles_missing_sections() -> None:

@@ -46,9 +46,9 @@ POSTGRES_PASSWORD_ENV = "POSTGRES_PASSWORD"
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCHEMA_MIGRATION_PATH = REPO_ROOT / "migrations" / "persistence" / "001_initial.sql"
 SUPPORT_COMPOSE_PATH = Path(__file__).resolve().parent / "support" / "docker-compose.yml"
-PROMPT_TOPIC = "tests/fixtures/agents/prompts/topic_selector.txt"
-PROMPT_SCENARIO = "tests/fixtures/agents/prompts/scenario_generator.txt"
-PROMPT_CRITIC = "tests/fixtures/agents/prompts/critic.txt"
+PROMPT_TOPIC = "prompts/topic_selector/v1.txt"
+PROMPT_SCENARIO = "prompts/scenario_generator/v1.txt"
+PROMPT_CRITIC = "prompts/critic/v1.txt"
 
 _FORBIDDEN_IMPORT_PREFIXES = (
     "runtime.wiring",

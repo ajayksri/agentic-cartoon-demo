@@ -15,7 +15,8 @@ from config.types import AgentId
 _AGENT_ID = AgentId.TOPIC_SELECTOR
 
 
-_FIXTURES = Path(__file__).resolve().parents[2] / "fixtures" / "agents" / "prompts"
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_PROMPTS = _REPO_ROOT / "prompts"
 
 
 def test_load_returns_normalized_lf_content_and_version_hash() -> None:
@@ -23,7 +24,7 @@ def test_load_returns_normalized_lf_content_and_version_hash() -> None:
     from agents.constants import PROMPT_VERSION_HEX_LENGTH
     from agents.prompts.loader import PromptLoader
 
-    path = _FIXTURES / "topic_selector.txt"
+    path = _PROMPTS / "topic_selector" / "v1.txt"
     loader = PromptLoader(enable_cache=False)
     result = loader.load(str(path), agent_id=_AGENT_ID)
 
@@ -68,7 +69,7 @@ def test_oversized_file_raises_prompt_load_error(tmp_path: Path) -> None:
 def test_cache_returns_same_result_for_unchanged_mtime() -> None:
     from agents.prompts.loader import PromptLoader
 
-    path = _FIXTURES / "topic_selector.txt"
+    path = _PROMPTS / "topic_selector" / "v1.txt"
     loader = PromptLoader(enable_cache=True)
     first = loader.load(str(path), agent_id=_AGENT_ID)
     second = loader.load(str(path), agent_id=_AGENT_ID)
@@ -79,7 +80,7 @@ def test_cache_returns_same_result_for_unchanged_mtime() -> None:
 def test_cache_thread_safe_under_concurrent_load() -> None:
     from agents.prompts.loader import PromptLoader
 
-    path = _FIXTURES / "topic_selector.txt"
+    path = _PROMPTS / "topic_selector" / "v1.txt"
     loader = PromptLoader(enable_cache=True)
     versions: list[str] = []
     errors: list[BaseException] = []

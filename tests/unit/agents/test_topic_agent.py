@@ -12,6 +12,8 @@ from providers import GenerateResponse, TokenUsage
 
 
 _FIXTURES = Path(__file__).resolve().parents[2] / "fixtures" / "agents"
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_PROMPTS = _REPO_ROOT / "prompts"
 
 
 def test_topic_agent_smoke_with_fake_provider() -> None:
@@ -34,7 +36,7 @@ def test_topic_agent_smoke_with_fake_provider() -> None:
     config = update_agent_prompt_file(
         config,
         agent_id=AgentId.TOPIC_SELECTOR,
-        prompt_file=str(_FIXTURES / "prompts" / "topic_selector.txt"),
+        prompt_file=str(_PROMPTS / "topic_selector" / "v1.txt"),
     )
     provider = create_capturing_fake_provider(config)
     provider.set_next_response(

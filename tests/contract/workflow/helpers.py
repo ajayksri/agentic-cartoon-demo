@@ -68,7 +68,7 @@ def minimal_workflow_config(*, max_scenario_revisions: int = 2) -> AppConfig:
             AgentId.TOPIC_SELECTOR: AgentConfig(
                 provider=ProviderId.GEMINI,
                 model="gemini-pro",
-                prompt_file="prompts/topic_selector.txt",
+                prompt_file="prompts/topic_selector/v1.txt",
             ),
         },
         providers={

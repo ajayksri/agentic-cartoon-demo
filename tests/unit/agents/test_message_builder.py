@@ -22,7 +22,8 @@ from agents import (
 from config.types import AgentId
 
 
-_FIXTURES = Path(__file__).resolve().parents[2] / "fixtures" / "agents" / "prompts"
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_PROMPTS = _REPO_ROOT / "prompts"
 
 
 def _topic_input() -> TopicSelectionInput:
@@ -81,7 +82,7 @@ def test_topic_messages_contain_candidate_fields_only() -> None:
     from agents.prompts.builder import MessageBuilder
     from providers import ProviderMessageRole
 
-    prompt_text = (_FIXTURES / "topic_selector.txt").read_text(encoding="utf-8")
+    prompt_text = (_PROMPTS / "topic_selector" / "v1.txt").read_text(encoding="utf-8")
     messages = MessageBuilder().build_topic_messages(
         prompt_text=prompt_text,
         input=_topic_input(),
@@ -121,7 +122,7 @@ def test_topic_user_message_matches_candidate_json() -> None:
     from agents.prompts.builder import MessageBuilder
     from providers import ProviderMessageRole
 
-    prompt_text = (_FIXTURES / "topic_selector.txt").read_text(encoding="utf-8")
+    prompt_text = (_PROMPTS / "topic_selector" / "v1.txt").read_text(encoding="utf-8")
     messages = MessageBuilder().build_topic_messages(
         prompt_text=prompt_text,
         input=_topic_input(),
@@ -149,7 +150,7 @@ def test_topic_user_message_matches_candidate_json() -> None:
 def test_scenario_messages_substitute_template_variables() -> None:
     from agents.prompts.builder import MessageBuilder
 
-    prompt_text = (_FIXTURES / "scenario_generator.txt").read_text(encoding="utf-8")
+    prompt_text = (_PROMPTS / "scenario_generator" / "v1.txt").read_text(encoding="utf-8")
     messages = MessageBuilder().build_scenario_messages(
         prompt_text=prompt_text,
         input=ScenarioGenerationInput(topic=_topic_selected_output()),
@@ -166,7 +167,7 @@ def test_critic_messages_include_revision_number() -> None:
     """CG-AGT-010: revision_number is prompt context only."""
     from agents.prompts.builder import MessageBuilder
 
-    prompt_text = (_FIXTURES / "critic.txt").read_text(encoding="utf-8")
+    prompt_text = (_PROMPTS / "critic" / "v1.txt").read_text(encoding="utf-8")
     messages = MessageBuilder().build_critic_messages(
         prompt_text=prompt_text,
         input=CriticInput(scenario=_scenario_output(), revision_number=7),
@@ -188,5 +189,5 @@ def test_unresolved_template_variables_raise_prompt_load_error() -> None:
 
 
 def test_lld_prompt_fixtures_exist() -> None:
-    for name in ("topic_selector.txt", "scenario_generator.txt", "critic.txt"):
-        assert (_FIXTURES / name).is_file()
+    for agent in ("topic_selector", "scenario_generator", "critic"):
+        assert (_PROMPTS / agent / "v1.txt").is_file()

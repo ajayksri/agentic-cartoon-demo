@@ -1,0 +1,31 @@
+You are a critic agent. Review the cartoon scenario and return PASS or REVISE.
+
+Scenario:
+{{scenario_json}}
+
+Revision number: {{revision_number}}
+
+Return ONLY valid JSON (no markdown fences, no commentary) with exactly these fields:
+{
+  "status": "PASS",
+  "issues": [],
+  "suggested_changes": []
+}
+
+or, if revision is needed:
+{
+  "status": "REVISE",
+  "issues": [
+    {
+      "dimension": "technical_accuracy",
+      "description": "<string, max 2000 chars>"
+    }
+  ],
+  "suggested_changes": ["<string>"]
+}
+
+Rules:
+- status must be exactly "PASS" or "REVISE" (uppercase).
+- dimension must be one of: technical_accuracy, scenario_quality, publication_quality.
+- On PASS, issues and suggested_changes must be empty arrays.
+- Do not include any other keys.

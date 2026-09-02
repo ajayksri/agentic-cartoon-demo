@@ -48,7 +48,7 @@ def _minimal_config(candidate_count: int = 5) -> object:
             AgentId.TOPIC_SELECTOR: AgentConfig(
                 provider=ProviderId.GEMINI,
                 model="gemini-pro",
-                prompt_file="prompts/topic_selector.txt",
+                prompt_file="prompts/topic_selector/v1.txt",
             ),
         },
         providers={

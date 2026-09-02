@@ -48,7 +48,7 @@ def _factory_config_draft() -> ConfigDraft:
             AgentId.TOPIC_SELECTOR: AgentDraft(
                 provider=ProviderId.OPENAI,
                 model="gpt-4",
-                prompt_file="prompts/topic_selector.txt",
+                prompt_file="prompts/topic_selector/v1.txt",
             ),
         },
         providers={

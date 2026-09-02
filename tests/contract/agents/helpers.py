@@ -37,7 +37,9 @@ from providers import (
     create_provider,
 )
 
-_FIXTURES_ROOT = Path(__file__).resolve().parents[2] / "fixtures" / "agents"
+_REPO_ROOT = Path(__file__).resolve().parents[3]
+_FIXTURES_ROOT = _REPO_ROOT / "tests" / "fixtures" / "agents"
+_PROMPTS_ROOT = _REPO_ROOT / "prompts"
 
 
 def fixtures_root() -> Path:
@@ -49,7 +51,7 @@ def load_output_fixture(name: str) -> str:
 
 
 def load_prompt_fixture(name: str) -> str:
-    return (_FIXTURES_ROOT / "prompts" / name).read_text(encoding="utf-8")
+    return (_PROMPTS_ROOT / name).read_text(encoding="utf-8")
 
 
 def _base_draft(*, prompt_files: Mapping[AgentId, str] | None = None) -> ConfigDraft:
@@ -57,9 +59,9 @@ def _base_draft(*, prompt_files: Mapping[AgentId, str] | None = None) -> ConfigD
     retry_policy = RetryPolicyDraft(max_attempts=3, backoff=backoff)
     retry = {task: copy.deepcopy(retry_policy) for task in TaskType}
     default_prompts = {
-        AgentId.TOPIC_SELECTOR: str(_FIXTURES_ROOT / "prompts" / "topic_selector.txt"),
-        AgentId.SCENARIO_GENERATOR: str(_FIXTURES_ROOT / "prompts" / "scenario_generator.txt"),
-        AgentId.CRITIC: str(_FIXTURES_ROOT / "prompts" / "critic.txt"),
+        AgentId.TOPIC_SELECTOR: str(_PROMPTS_ROOT / "topic_selector" / "v1.txt"),
+        AgentId.SCENARIO_GENERATOR: str(_PROMPTS_ROOT / "scenario_generator" / "v1.txt"),
+        AgentId.CRITIC: str(_PROMPTS_ROOT / "critic" / "v1.txt"),
     }
     if prompt_files:
         default_prompts.update(prompt_files)

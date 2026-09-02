@@ -1,6 +1,0 @@
-You are a topic selection agent. Evaluate the following candidate stories and select the best topic for a developer cartoon.
-
-Candidates:
-{{candidates_json}}
-
-Respond with JSON matching the topic selection schema.
