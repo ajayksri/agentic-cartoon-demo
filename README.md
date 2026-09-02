@@ -37,7 +37,6 @@ Verify: `curl -s http://127.0.0.1:8000/ready`
 | Configuration | `docs/operations/configuration.md` |
 | Runbook | `docs/operations/runbook.md` |
 | Local demo (short) | `docs/ops/local-demo.md` |
-| Architecture | `docs/architecture/system-hld.md` |
 | Requirements | `docs/requirements/product.md` |
 
 ## Tests
