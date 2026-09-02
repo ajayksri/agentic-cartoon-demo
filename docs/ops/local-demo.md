@@ -2,9 +2,9 @@
 
 Status: Approved  
 Owner: Human product owner  
-Last reviewed: 2026-08-31  
+Last reviewed: 2026-09-02  
 Authority: `docs/decisions/product-decisions.md` PD-001; `docs/architecture/deployment-model.md`  
-Related: `ACD-OPS-001`, `ACD-OPS-010`, `ACD-NFR-011`
+Related: `ACD-OPS-001`, `ACD-OPS-010`, `ACD-NFR-011`, `docs/operations/runbook.md`
 
 Short, copy-pasteable steps to run the **fake-provider** local demo on one host.
 Infra in Docker; application processes in your Python venv.
@@ -161,31 +161,191 @@ curl -s http://127.0.0.1:8000/ready | python3 -m json.tool
 
 ---
 
-## 6. Initiate a workflow
+## 6. Run the demo (end-to-end)
 
-### HTTP (recommended)
+Requires API running. Default API URL: `http://127.0.0.1:8000` (override with
+`CARTOON_API_URL` or `--api-url` on CLI commands).
+
+Set a shared shell variable for the steps below:
 
 ```bash
-curl -s -X POST http://127.0.0.1:8000/workflows \
+export API_BASE="http://127.0.0.1:8000"
+```
+
+### What this demo does
+
+The workflow collects Hacker News stories, selects a topic, generates a cartoon
+scenario, and runs an automated critic review. When the critic passes, the workflow
+pauses in **`AWAITING_HUMAN_APPROVAL`**. At that point you review the **output
+package** (topic, scenario, critic verdict) and submit **APPROVE**, **REJECT**, or
+**REQUEST_REGENERATION**.
+
+Pipeline: `COLLECTING` → `SELECTING_TOPIC` → `GENERATING_SCENARIO` → `REVIEWING`
+→ `AWAITING_HUMAN_APPROVAL` → `APPROVED` (after human approval).
+
+### 6.1 Initiate a workflow
+
+#### HTTP
+
+```bash
+curl -s -X POST "${API_BASE}/workflows" \
   -H 'Content-Type: application/json' \
   -d '{"actor":"local-demo"}' | python3 -m json.tool
 ```
 
-Save `workflow_id` from the response, then poll status:
+Save `workflow_id` from the response:
 
 ```bash
 export WORKFLOW_ID="<workflow_id_from_response>"
-curl -s "http://127.0.0.1:8000/workflows/${WORKFLOW_ID}" | python3 -m json.tool
 ```
 
-### CLI
+#### CLI
 
 ```bash
-cartoon-demo-cli initiate --actor local-demo
-cartoon-demo-cli status --workflow-id "<workflow_id>"
+export WORKFLOW_ID=$(cartoon-demo-cli initiate --actor local-demo | awk '/workflow_id:/ {print $2}')
+cartoon-demo-cli status --workflow-id "$WORKFLOW_ID"
 ```
 
-Requires API running. Default API URL: `http://127.0.0.1:8000` (override with `CARTOON_API_URL` or `--api-url`).
+### 6.2 Monitor progression
+
+Poll until state is **`AWAITING_HUMAN_APPROVAL`**. This usually takes a few seconds
+with all four workers running.
+
+#### HTTP
+
+```bash
+curl -s "${API_BASE}/workflows/${WORKFLOW_ID}" | python3 -m json.tool
+```
+
+Quick state-only check:
+
+```bash
+curl -s "${API_BASE}/workflows/${WORKFLOW_ID}" | python3 -c \
+  "import sys,json; print(json.load(sys.stdin)['state'])"
+```
+
+#### CLI
+
+```bash
+cartoon-demo-cli status --workflow-id "$WORKFLOW_ID"
+```
+
+Repeat until `state: AWAITING_HUMAN_APPROVAL`, or watch continuously:
+
+```bash
+watch -n2 "cartoon-demo-cli status --workflow-id $WORKFLOW_ID"
+```
+
+Event timeline (optional):
+
+```bash
+cartoon-demo-cli timeline --workflow-id "$WORKFLOW_ID"
+```
+
+**Stuck in an early state?** Confirm all four worker roles are running (see §5.2).
+
+### 6.3 Inspect output (review before approving)
+
+Do not approve until you have reviewed the generated scenario. The output package
+aggregates topic selection, scenario (premise, characters, panels, punchline),
+critic evaluation, and execution metadata (`ACD-ART-007`).
+
+#### HTTP (full package — use for review)
+
+Full JSON:
+
+```bash
+curl -s "${API_BASE}/workflows/${WORKFLOW_ID}/output" | python3 -m json.tool
+```
+
+Human-readable summary (topic, scenario, critic verdict):
+
+```bash
+curl -s "${API_BASE}/workflows/${WORKFLOW_ID}/output" | python3 -c "
+import sys, json
+pkg = json.load(sys.stdin).get('package', {})
+topic = pkg.get('topic') or {}
+scenario = pkg.get('scenario') or {}
+critic = pkg.get('critic') or {}
+print('Topic:', topic.get('selected_topic', '(missing)'))
+print('Rationale:', topic.get('rationale', '(missing)'))
+print('Premise:', scenario.get('premise', '(missing)'))
+print('Panels:', len(scenario.get('panels') or []))
+print('Punchline:', scenario.get('punchline', '(missing)'))
+print('Critic verdict:', critic.get('verdict', '(missing)'))
+"
+```
+
+#### CLI (metadata summary)
+
+The CLI prints package key names and completion status only (no artifact bodies):
+
+```bash
+cartoon-demo-cli output --workflow-id "$WORKFLOW_ID"
+```
+
+Expected `package_keys` include `topic`, `scenario`, `critic`, `source`, `execution`.
+Use the HTTP commands above to read the actual scenario content.
+
+### 6.4 Submit human approval
+
+Valid only when state is **`AWAITING_HUMAN_APPROVAL`** (`ACD-SEC-006`).
+Actions: `approve`, `reject`, `request_regeneration` (case-insensitive via API).
+
+#### HTTP
+
+Approve (happy path):
+
+```bash
+curl -s -X POST "${API_BASE}/workflows/${WORKFLOW_ID}/approval" \
+  -H 'Content-Type: application/json' \
+  -d '{"action":"approve","actor":"local-demo"}' | python3 -m json.tool
+```
+
+Reject:
+
+```bash
+curl -s -X POST "${API_BASE}/workflows/${WORKFLOW_ID}/approval" \
+  -H 'Content-Type: application/json' \
+  -d '{"action":"reject","actor":"local-demo"}' | python3 -m json.tool
+```
+
+Request regeneration:
+
+```bash
+curl -s -X POST "${API_BASE}/workflows/${WORKFLOW_ID}/approval" \
+  -H 'Content-Type: application/json' \
+  -d '{"action":"request_regeneration","actor":"local-demo"}' | python3 -m json.tool
+```
+
+#### CLI
+
+```bash
+cartoon-demo-cli approve --workflow-id "$WORKFLOW_ID" --action approve --actor local-demo
+```
+
+Other actions:
+
+```bash
+cartoon-demo-cli approve --workflow-id "$WORKFLOW_ID" --action reject --actor local-demo
+cartoon-demo-cli approve --workflow-id "$WORKFLOW_ID" --action request_regeneration --actor local-demo
+```
+
+### 6.5 Verify final state
+
+#### HTTP
+
+```bash
+curl -s "${API_BASE}/workflows/${WORKFLOW_ID}" | python3 -m json.tool
+```
+
+After approve, expect `state: APPROVED`.
+
+#### CLI
+
+```bash
+cartoon-demo-cli status --workflow-id "$WORKFLOW_ID"
+```
 
 ---
 
@@ -197,20 +357,12 @@ and API running:
 1. POST `/workflows` returns **201** with a `workflow_id`.
 2. Coordinator publishes outbox rows → Redis Streams.
 3. Workers dequeue by stage (COLLECT → SELECT_TOPIC → GENERATE_SCENARIO → REVIEW_SCENARIO).
-4. Terminal wait state for Scenario A: **`AWAITING_HUMAN_APPROVAL`**.
+4. Workflow reaches **`AWAITING_HUMAN_APPROVAL`** with a complete output package.
+5. After human **APPROVE**, state transitions to **`APPROVED`**.
 
-```bash
-curl -s "http://127.0.0.1:8000/workflows/${WORKFLOW_ID}" | python3 -c \
-  "import sys,json; print(json.load(sys.stdin)['state'])"
-```
+Automated proof: `python3 -m pytest tests/integration/test_subprocess_e2e.py -q` (**INT-006**).
 
-Submit approval (optional):
-
-```bash
-curl -s -X POST "http://127.0.0.1:8000/workflows/${WORKFLOW_ID}/approval" \
-  -H 'Content-Type: application/json' \
-  -d '{"action":"approve","actor":"local-demo"}' | python3 -m json.tool
-```
+Day-2 operator reference: `docs/operations/runbook.md`.
 
 ---
 
@@ -223,6 +375,9 @@ curl -s -X POST "http://127.0.0.1:8000/workflows/${WORKFLOW_ID}/approval" \
 docker compose -f tests/integration/support/docker-compose.yml down
 ```
 
+Workflows remain durable in PostgreSQL; in-flight tasks may redeliver on restart
+(`ACD-OPS-003`).
+
 ---
 
 ## 9. Troubleshooting
@@ -234,6 +389,8 @@ docker compose -f tests/integration/support/docker-compose.yml down
 | `ConfigLoadError` / credential errors | Missing `FAKE_API_KEY`, `POSTGRES_*`, or bad `CARTOON_CONFIG_PATH` |
 | Workflow stuck early | Only one worker role running — start all four TaskTypes |
 | HN fetch failures during COLLECT | Network required for Hacker News API (collector); not an LLM call |
+| Approval rejected (409) | Workflow not in `AWAITING_HUMAN_APPROVAL` — check status first |
+| `output` shows keys but no scenario text | CLI omits artifact bodies by design — use `GET /workflows/{id}/output` (§6.3) |
 
 ---
 
@@ -245,7 +402,6 @@ docker compose -f tests/integration/support/docker-compose.yml down
 | Schema migration | `migrations/persistence/001_initial.sql` |
 | Demo config template | `config/cartoon.demo.yaml` |
 | Env template | `.env.example` |
-| Console scripts | `pyproject.toml` → `cartoon-demo-{api,coordinator,worker}` |
+| Console scripts | `pyproject.toml` → `cartoon-demo-{api,coordinator,worker,cli}` |
+| Operator runbook | `docs/operations/runbook.md` |
 | Integration harness env helpers | `tests/integration/helpers.py` |
-
-Run **INT-006** subprocess E2E for automated proof of this path.
