@@ -46,7 +46,3 @@ Verify: `curl -s http://127.0.0.1:8000/ready`
 python3 -m pytest tests/integration/ -q   # requires Postgres + Redis
 python3 -m pytest tests/unit/ -q          # module unit tests
 ```
-
-## License / status
-
-V1 demonstration codebase. See `docs/requirements/non-goals.md` for explicit exclusions.
